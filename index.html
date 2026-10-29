@@ -3,932 +3,912 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian Online VLAN Interaktif</title>
+    <title>Kuis Interaktif Konfigurasi VLAN - SMKN 1 Wakatobi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Inter & Phosphor Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        /* Custom scrollbar for question grid */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased selection:bg-none">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
     <!-- HEADER / NAVIGATION -->
-    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-30">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="ph-bold ph-network text-2xl text-indigo-200"></i>
-                <h1 class="font-bold text-lg tracking-wide">Ujian VLAN</h1>
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-network-wired text-xl text-blue-300"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base md:text-lg leading-tight">Kuis VLAN (TP 10.4)</h1>
+                    <p class="text-xs text-blue-200 hidden sm:block">TKJ SMKN 1 Wakatobi &bull; Deep Learning</p>
+                </div>
             </div>
-            <!-- Admin / Teacher Toggle Button -->
-            <button id="btnAdminModal" onclick="openAdminAuth()" class="flex items-center space-x-1 bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-indigo-500/30 shadow-sm">
-                <i class="ph-bold ph-user-gear text-sm"></i>
-                <span>Guru / Admin</span>
-            </button>
+            
+            <div class="flex items-center space-x-2">
+                <button id="btnRoleStudent" onclick="switchRole('student')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 bg-white text-brand-900 shadow">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Siswa</span>
+                </button>
+                <button id="btnRoleTeacher" onclick="switchRole('teacher')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 transition-all duration-200 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>Guru</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-3xl mx-auto w-full flex-1 p-4 flex flex-col justify-center">
+    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow">
 
-        <!-- VIEW 1: STUDENT LOGIN / LANDING SCREEN -->
-        <section id="viewLogin" class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100 max-w-md mx-auto w-full transition-all duration-300">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-                    <i class="ph-bold ph-student text-3xl"></i>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800">Selamat Datang di Ujian</h2>
-                <p class="text-xs text-slate-500 mt-1">Materi: Konfigurasi VLAN & Inter-VLAN Routing</p>
-            </div>
+        <!-- STUDENT PORTAL SECTION -->
+        <section id="studentPortal" class="space-y-6">
 
-            <!-- Exam Info Cards -->
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
-                    <span class="block text-xs text-slate-400 font-medium">Jumlah Soal</span>
-                    <span class="text-lg font-bold text-indigo-600">15 Soal</span>
+            <!-- Student Login / Select Form -->
+            <div id="studentLoginForm" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100 space-y-5">
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Masuk Kuis Evaluasi</h2>
+                    <p class="text-xs text-slate-500">Pilih identitas siswa dari daftar 17 Rombel untuk memulai ujian mandiri.</p>
                 </div>
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
-                    <span class="block text-xs text-slate-400 font-medium">Durasi Ujian</span>
-                    <span id="displayDuration" class="text-lg font-bold text-indigo-600">30 Menit</span>
-                </div>
-            </div>
 
-            <form id="formStudentStart" onsubmit="startExam(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Pilih Nama Siswa</label>
-                    <div class="relative">
-                        <select id="selectStudentName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none outline-none">
-                            <option value="" disabled selected>-- Pilih nama kamu dari daftar --</option>
+                <div class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Pilih Nama Siswa (17 Rombel)</label>
+                        <select id="selectStudent" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition text-sm text-slate-800 font-medium">
+                            <option value="">-- Pilih Nama Kamu --</option>
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                            <i class="ph-bold ph-caret-down"></i>
+                    </div>
+
+                    <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-800 space-y-1">
+                        <p class="font-semibold flex items-center gap-1.5 text-brand-700">
+                            <i class="fa-solid fa-circle-info"></i> Petunjuk Pembelajaran Mendalam:
+                        </p>
+                        <ul class="list-disc list-inside space-y-0.5 text-slate-600 pl-1">
+                            <li><strong>Mindful:</strong> Fokus dan baca soal secara saksama.</li>
+                            <li><strong>Meaningful:</strong> Kaitkan dengan simulasi Packet Tracer / Perangkat Fisik.</li>
+                            <li><strong>Joyful:</strong> Kerjakan tanpa rasa cemas, waktu fleksibel.</li>
+                        </ul>
+                    </div>
+
+                    <button onclick="startQuiz()" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/20 transition duration-200 flex items-center justify-center space-x-2">
+                        <span>Mulai Pengerjaan Soal</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quizScreen" class="hidden space-y-6">
+                <!-- Quiz Progress Bar Header -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <div class="w-10 h-10 bg-brand-100 text-brand-700 rounded-xl flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <h3 id="displayStudentName" class="font-bold text-slate-900 text-sm sm:text-base">Siswa</h3>
+                            <p id="displayStudentNo" class="text-xs text-slate-500">Nomor Absen: -</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 block font-medium">Timer Berjalan</span>
+                            <span id="quizTimer" class="text-sm font-bold text-brand-600 font-mono">00:00</span>
+                        </div>
+                        <button onclick="confirmSubmitQuiz()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Selesai & Kirim</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Quiz Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-3 space-y-5">
+                        <div class="bg-white p-5 sm:p-7 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                                <span class="px-3 py-1 bg-brand-50 text-brand-700 font-bold text-xs rounded-full border border-brand-100">
+                                    Soal <span id="currentQNum">1</span> dari 5
+                                </span>
+                                <span id="questionTopic" class="text-xs font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-md">
+                                    Topik: Konfigurasi VLAN
+                                </span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <h4 id="questionText" class="text-base sm:text-lg font-semibold text-slate-800 leading-relaxed">
+                                    -- Pertanyaan --
+                                </h4>
+                                <div id="codeSnippetBox" class="hidden bg-slate-900 text-emerald-400 font-mono text-xs sm:text-sm p-4 rounded-xl overflow-x-auto shadow-inner border border-slate-800">
+                                    <pre id="codeSnippetText"></pre>
+                                </div>
+                            </div>
+
+                            <div id="optionsContainer" class="space-y-3 pt-2"></div>
+
+                            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                                <button id="btnPrevQ" onclick="prevQuestion()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                    <span>Sebelumnya</span>
+                                </button>
+                                <button id="btnNextQ" onclick="nextQuestion()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs rounded-xl shadow transition flex items-center space-x-2">
+                                    <span>Berikutnya</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation Panel -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                            <h4 class="font-bold text-xs text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                                <span>Navigasi Soal</span>
+                                <span id="answeredCount" class="text-brand-600 text-xs font-semibold">0/5 Terjawab</span>
+                            </h4>
+                            <div id="numberGrid" class="grid grid-cols-5 gap-2"></div>
+                            <div class="pt-2 border-t border-slate-100 text-[11px] text-slate-400 space-y-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 bg-brand-600 rounded-sm inline-block"></span>
+                                    <span>Aktif</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 bg-emerald-100 border border-emerald-400 rounded-sm inline-block"></span>
+                                    <span>Terjawab</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 bg-slate-100 border border-slate-200 rounded-sm inline-block"></span>
+                                    <span>Belum</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Result Screen -->
+            <div id="resultScreen" class="hidden max-w-2xl mx-auto space-y-6">
+                <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 text-center space-y-6">
+                    <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner border border-emerald-100">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-extrabold text-slate-900">Hasil Evaluasi VLAN</h2>
+                        <p id="resultStudentDetail" class="text-xs text-slate-500">Nama Siswa &bull; Nomor Absen</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span class="block text-xs text-slate-400 font-medium mb-1">Nilai Akhir</span>
+                            <span id="finalScore" class="text-2xl font-black text-brand-600">0</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span class="block text-xs text-slate-400 font-medium mb-1">Benar / Total</span>
+                            <span id="finalCorrect" class="text-2xl font-black text-emerald-600">0/5</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span class="block text-xs text-slate-400 font-medium mb-1">Waktu</span>
+                            <span id="finalTime" class="text-lg font-bold text-slate-700 font-mono leading-7">00:00</span>
+                        </div>
+                    </div>
+
+                    <div id="kkmBadge" class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                        <i class="fa-solid fa-check-circle mr-1.5"></i> TUNTAS (Menguasai TP 10.4)
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                        <button onclick="toggleReviewSection()" class="px-5 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Ulasan Kunci Jawaban</span>
+                        </button>
+                        <button onclick="resetToStudentHome()" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Kembali ke Utama</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Review Section -->
+                <div id="reviewSection" class="hidden bg-white p-6 rounded-3xl shadow-xl border border-slate-100 space-y-6">
+                    <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between">
+                        <span>Pembahasan Soal & Kunci Jawaban</span>
+                        <span class="text-xs text-slate-400 font-normal">Sikap Reflektif</span>
+                    </h3>
+                    <div id="reviewContainer" class="space-y-6"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TEACHER DASHBOARD SECTION -->
+        <section id="teacherPortal" class="hidden space-y-6">
+            
+            <!-- Teacher Login Form -->
+            <div id="teacherLoginForm" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-100 space-y-5">
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Autentikasi Guru</h2>
+                    <p class="text-xs text-slate-500">Masukkan kata sandi guru (Default: <code class="font-bold text-indigo-600">12345</code>) untuk memantau nilai.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Password Guru</label>
+                        <div class="relative">
+                            <input type="password" id="teacherPassword" placeholder="Masukkan password..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm pr-10">
+                            <button onclick="togglePasswordVisibility()" class="absolute right-3 top-3.5 text-slate-400 text-sm hover:text-slate-600">
+                                <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p id="loginError" class="text-xs text-rose-500 font-medium hidden flex items-center space-x-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Password salah. Coba lagi (12345).</span>
+                    </p>
+
+                    <button onclick="verifyTeacherLogin()" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/20 transition duration-200 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Masuk Dashboard Rekap</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Teacher Dashboard Content -->
+            <div id="teacherDashboard" class="hidden space-y-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <span>Rekapitulasi Nilai TP 10.4 (VLAN)</span>
+                            <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-full font-semibold">17 Siswa</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">Pemantauan real-time hasil asesmen pembelajaran mendalam.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <button onclick="exportToCSV()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Ekspor CSV</span>
+                        </button>
+                        <button onclick="confirmResetAllData()" class="px-3.5 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 text-xs font-semibold rounded-xl transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Reset Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-blue-50 text-brand-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">Sudah Ujian</span>
+                            <span id="statCompleted" class="text-xl font-bold text-slate-800">0 / 17</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">Rata-Rata Nilai</span>
+                            <span id="statAverage" class="text-xl font-bold text-slate-800">0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">Tuntas (&ge; 60)</span>
+                            <span id="statPassed" class="text-xl font-bold text-slate-800">0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">Belum Ujian</span>
+                            <span id="statPending" class="text-xl font-bold text-slate-800">17</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
-                    <div class="font-bold flex items-center gap-1.5 text-amber-900">
-                        <i class="ph-fill ph-warning-circle text-base"></i> Aturan Ujian & Pengawasan:
+                <!-- Table Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden space-y-4 p-5">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Daftar Nilai 17 Siswa Rombel</h3>
+                        <div class="flex items-center space-x-2 w-full sm:w-auto">
+                            <input type="text" id="searchStudentTable" onkeyup="filterTable()" placeholder="Cari nama siswa..." class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brand-500 w-full sm:w-48">
+                            <select id="filterStatus" onchange="filterTable()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                                <option value="all">Semua Status</option>
+                                <option value="completed">Sudah Ujian</option>
+                                <option value="pending">Belum Ujian</option>
+                            </select>
+                        </div>
                     </div>
-                    <ul class="list-disc list-inside space-y-0.5 text-amber-700 pl-1">
-                        <li>Ujian akan berjalan dalam mode <b>Layar Penuh (Fullscreen)</b>.</li>
-                        <li><b>Dilarang berpindah tab/aplikasi!</b> Maksimal 3x pelanggaran.</li>
-                        <li>Lebih dari 3x pelanggaran, ujian akan di-<b>submit otomatis</b>.</li>
-                    </ul>
-                </div>
 
-                <button type="submit" id="btnStart" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all text-sm flex items-center justify-center space-x-2">
-                    <span>Mulai Kerjakan Ujian</span>
-                    <i class="ph-bold ph-arrow-right"></i>
-                </button>
-            </form>
-        </section>
-
-        <!-- VIEW 2: QUIZ / EXAM INTERFACE -->
-        <section id="viewQuiz" class="hidden flex-col space-y-4">
-            <!-- Sticky Quiz Header Bar -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm border border-indigo-100">
-                        <span id="currentQNum">1</span>/15
-                    </div>
-                    <div>
-                        <h3 id="quizStudentName" class="text-xs font-bold text-slate-700 truncate max-w-[130px] sm:max-w-[200px]">Nama Siswa</h3>
-                        <span id="warningBadge" class="text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">Pelanggaran: 0/3</span>
-                    </div>
-                </div>
-
-                <!-- Timer -->
-                <div class="flex items-center space-x-1.5 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl text-rose-600 font-mono font-bold text-sm">
-                    <i class="ph-bold ph-timer text-base animate-pulse"></i>
-                    <span id="timerText">30:00</span>
-                </div>
-            </div>
-
-            <!-- Question Card -->
-            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 p-5 space-y-4">
-                <div class="text-sm font-semibold text-slate-800 leading-relaxed" id="questionText">
-                    Loading soal...
-                </div>
-
-                <!-- Optional Code/Text Box inside question -->
-                <div id="codeSnippetBox" class="hidden bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto whitespace-pre"></div>
-
-                <!-- Answer Options -->
-                <div class="space-y-2.5 pt-2" id="optionsContainer">
-                    <!-- Options generated via JS -->
-                </div>
-            </div>
-
-            <!-- Quick Navigation Grid Button Container -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-semibold text-slate-500">Navigasi Soal</span>
-                    <span id="answeredCount" class="text-xs font-medium text-indigo-600">Dijawab: 0/15</span>
-                </div>
-                <div id="questionGrid" class="grid grid-cols-5 gap-2 max-h-24 overflow-y-auto no-scrollbar p-1">
-                    <!-- Grid buttons generated via JS -->
-                </div>
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="flex items-center justify-between gap-3 pt-1">
-                <button onclick="prevQuestion()" id="btnPrev" class="flex-1 bg-slate-200 hover:bg-slate-300 active:bg-slate-400 text-slate-700 font-semibold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-1">
-                    <i class="ph-bold ph-caret-left"></i>
-                    <span>Sebelumnya</span>
-                </button>
-                <button onclick="nextQuestion()" id="btnNext" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-1 shadow-md shadow-indigo-100">
-                    <span>Berikutnya</span>
-                    <i class="ph-bold ph-caret-right"></i>
-                </button>
-                <button onclick="confirmSubmitExam()" id="btnSubmit" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-1 shadow-md shadow-emerald-100">
-                    <i class="ph-bold ph-check-circle"></i>
-                    <span>Selesaikan</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- VIEW 3: RESULT SCREEN -->
-        <section id="viewResult" class="hidden bg-white rounded-2xl shadow-xl p-6 border border-slate-100 max-w-md mx-auto w-full text-center space-y-6">
-            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                <i class="ph-bold ph-trophy text-4xl"></i>
-            </div>
-
-            <div>
-                <h2 class="text-xl font-bold text-slate-800">Ujian Selesai!</h2>
-                <p class="text-xs text-slate-500 mt-1" id="resultStudentName">Nama Siswa</p>
-            </div>
-
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
-                <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Nilai Akhir</div>
-                <div id="resultScore" class="text-5xl font-extrabold text-indigo-600">0</div>
-                <div class="text-xs text-slate-500 border-t border-slate-200 pt-3 flex justify-around">
-                    <div>
-                        <span class="block text-slate-400">Benar</span>
-                        <span id="resultCorrect" class="font-bold text-emerald-600">0</span> / 15
-                    </div>
-                    <div>
-                        <span class="block text-slate-400">Waktu Selesai</span>
-                        <span id="resultTime" class="font-bold text-slate-700">00:00</span>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table id="gradesTable" class="w-full text-left text-xs text-slate-600 border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-y border-slate-200 text-slate-700 uppercase tracking-wider font-semibold">
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3 text-center">Benar</th>
+                                    <th class="p-3 text-center">Nilai</th>
+                                    <th class="p-3">Waktu Tempuh</th>
+                                    <th class="p-3">Tanggal Selesai</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <p class="text-xs text-slate-500 leading-relaxed">
-                Jawaban kamu telah berhasil disimpan oleh sistem. Silakan laporkan ke guru pengawas bahwa kamu telah selesai.
-            </p>
-
-            <button onclick="resetToHome()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-4 rounded-xl text-xs shadow-md transition">
-                Kembali ke Halaman Depan
-            </button>
         </section>
 
     </main>
 
     <!-- FOOTER -->
-    <footer class="text-center py-3 text-[11px] text-slate-400 border-t border-slate-200/60 bg-white">
-        Ujian Konfigurasi VLAN &copy; 2026 - Inter-VLAN Routing System
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-400 space-y-1">
+            <p><strong>Modul Ajar TP 10.4: Konfigurasi VLAN</strong> &bull; SMKN 1 Wakatobi &bull; Penyusun: Agus Wahyudi, S.St.Pi., M.Pi.</p>
+        </div>
     </footer>
 
-    <!-- MODAL 1: ADMIN AUTHENTICATION -->
-    <div id="modalAdminAuth" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-bold ph-lock-key text-indigo-600"></i> Access Guru / Admin
-                </h3>
-                <button onclick="closeModal('modalAdminAuth')" class="text-slate-400 hover:text-slate-600"><i class="ph-bold ph-x text-lg"></i></button>
+    <!-- MODAL KONFIRMASI -->
+    <div id="customModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden px-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full space-y-4 border border-slate-100 text-center">
+            <div id="modalIcon" class="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-circle-question"></i>
             </div>
-            <form onsubmit="verifyAdminPassword(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Masukkan Password Admin</label>
-                    <input type="password" id="inputAdminPassword" placeholder="Default: 12345" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                    <p id="adminAuthError" class="text-xs text-rose-500 mt-1 hidden">Password salah!</p>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-xs shadow-md">
-                    Masuk Panel Admin
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 2: ADMIN PANEL / DASHBOARD -->
-    <div id="modalAdminDashboard" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-100">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                    <i class="ph-bold ph-sliders text-indigo-600"></i> Panel Manajemen Guru
-                </h3>
-                <button onclick="closeModal('modalAdminDashboard')" class="text-slate-400 hover:text-slate-600"><i class="ph-bold ph-x text-xl"></i></button>
+            <h3 id="modalTitle" class="text-base font-bold text-slate-800">Konfirmasi</h3>
+            <p id="modalMessage" class="text-xs text-slate-500 leading-relaxed">Apakah Anda yakin?</p>
+            <div class="flex space-x-2 pt-2">
+                <button id="btnModalCancel" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl">Batal</button>
+                <button id="btnModalConfirm" class="w-1/2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow">Ya</button>
             </div>
-
-            <!-- Tab Navigation inside Admin Panel -->
-            <div class="flex space-x-2 border-b border-slate-200 mb-4">
-                <button id="tabBtnSettings" onclick="switchAdminTab('settings')" class="py-2 px-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600">Pengaturan Ujian & Siswa</button>
-                <button id="tabBtnRecap" onclick="switchAdminTab('recap')" class="py-2 px-3 text-xs font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent">Rekap Nilai Siswa</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto pr-1">
-                <!-- TAB CONTENT 1: SETTINGS -->
-                <div id="tabAdminSettings" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Durasi Ujian (Menit)</label>
-                        <input type="number" id="inputExamDuration" min="1" max="180" value="30" class="w-full sm:w-40 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Daftar Nama Siswa (1 Nama Per Baris)</label>
-                        <textarea id="inputStudentList" rows="8" class="w-full border border-slate-300 rounded-xl p-3 text-xs font-mono focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Masukkan 17 nama siswa..."></textarea>
-                        <span class="text-[11px] text-slate-400">Sistem mendukung hingga 17 siswa atau lebih.</span>
-                    </div>
-
-                    <button onclick="saveAdminSettings()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs shadow-md flex items-center gap-1.5">
-                        <i class="ph-bold ph-floppy-disk"></i>
-                        <span>Simpan Pengaturan</span>
-                    </button>
-                </div>
-
-                <!-- TAB CONTENT 2: RECAP / RESULTS -->
-                <div id="tabAdminRecap" class="hidden space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-semibold text-slate-500">Hasil Ujian Terdaftar</span>
-                        <button onclick="clearRecapData()" class="bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1">
-                            <i class="ph-bold ph-trash"></i> Reset All Data
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
-                                    <th class="p-2.5">No</th>
-                                    <th class="p-2.5">Nama Siswa</th>
-                                    <th class="p-2.5">Status</th>
-                                    <th class="p-2.5">Skor</th>
-                                    <th class="p-2.5">Melanggar</th>
-                                    <th class="p-2.5">Waktu Selesai</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recapTableBody" class="divide-y divide-slate-100 font-medium">
-                                <!-- Generated JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: CHEAT WARNING / FULLSCREEN ENFORCEMENT -->
-    <div id="modalWarning" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center border border-slate-100">
-            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3 animate-bounce">
-                <i class="ph-bold ph-warning text-3xl"></i>
-            </div>
-            <h3 class="font-bold text-slate-800 text-lg mb-1" id="warningTitle">Peringatan Pelanggaran!</h3>
-            <p class="text-xs text-slate-600 mb-4 leading-relaxed" id="warningMessage">
-                Kamu terdeteksi meninggalkan layar ujian / membuka aplikasi lain!
-            </p>
-            <div class="bg-amber-50 border border-amber-200 text-amber-800 text-xs py-2 px-3 rounded-xl mb-4 font-bold" id="warningCountText">
-                Pelanggaran ke-1 dari 3
-            </div>
-            <button onclick="resumeExamFromWarning()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl text-xs shadow-lg">
-                Kembali & Masuk Layar Penuh
-            </button>
         </div>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        /* ==========================================================================
-           1. DATA SOAL VLAN (15 SOAL MANDATORI)
-           ========================================================================== */
-        const quizData = [
+        const DEFAULT_STUDENTS = [
+            { no: 1, name: "AKBAR" },
+            { no: 2, name: "AKBAR RAHMAT ASMUDIN" },
+            { no: 3, name: "DESIYANI" },
+            { no: 4, name: "FAUZANAL AKRAM" },
+            { no: 5, name: "LA ODE HAZI AL HAZA SUHARDIN" },
+            { no: 6, name: "LA ODE WAHYUDIN" },
+            { no: 7, name: "LASMI" },
+            { no: 8, name: "MUH EKA SAPUTRA" },
+            { no: 9, name: "MUHAMMAD REZA" },
+            { no: 10, name: "NUR AIZYA" },
+            { no: 11, name: "RISWAN" },
+            { no: 12, name: "SAKINAH RAMADHANI" },
+            { no: 13, name: "SUCI SEL" },
+            { no: 14, name: "WA ODE BULAN RAMADHAN" },
+            { no: 15, name: "WA ODE DERLIN SEPTIANA" },
+            { no: 16, name: "WA ODE MARSYA MUHAJIR" },
+            { no: 17, name: "WA ODE NURAISYAH AFIFAH" }
+        ];
+
+        const QUIZ_QUESTIONS = [
             {
-                q: "Apa fungsi utama dari VLAN (Virtual Local Area Network) dalam sebuah jaringan komputer?",
-                options: [
-                    "Mempercepat koneksi internet secara keseluruhan",
-                    "Memecah satu jaringan fisik menjadi beberapa segmen jaringan logis secara terpisah",
-                    "Menggantikan fungsi dari kabel UTP dengan gelombang radio",
-                    "Menghubungkan jaringan lokal (LAN) ke internet publik tanpa router",
-                    "Mengubah alamat MAC perangkat menjadi alamat IP secara otomatis"
-                ],
-                answer: 1
+                id: 1,
+                topic: "Konsep Dasar VLAN",
+                question: "Sebuah sekolah ingin memisahkan jaringan Ruang Guru dan Lab Komputer menggunakan satu switch manageable tanpa menambah perangkat fisik. Teknologi yang tepat adalah...",
+                code: null,
+                options: ["Dynamic Routing", "VLAN (Virtual Local Area Network)", "NAT", "DNS", "STP"],
+                answer: 1,
+                explanation: "VLAN memungkinkan pembuatan segmen jaringan logis terisolasi pada satu switch fisik yang sama."
             },
             {
-                q: "Standar internasional yang mengatur mengenai pengoperasian VLAN (Virtual LAN) pada jaringan Ethernet adalah...",
-                options: ["IEEE 802.3", "IEEE 802.11", "IEEE 802.1Q", "IEEE 802.3ab", "IEEE 802.1W"],
-                answer: 2
+                id: 2,
+                topic: "VLAN Default",
+                question: "Secara default (bawaan pabrik), seluruh port pada switch Cisco berada dalam satu VLAN utama, yaitu...",
+                code: null,
+                options: ["VLAN 0", "VLAN 1", "VLAN 10", "VLAN 100", "VLAN 999"],
+                answer: 1,
+                explanation: "VLAN 1 adalah VLAN default bawaan pabrik tempat seluruh port teralokasi secara otomatis."
             },
             {
-                q: "Saat kita membuat VLAN dengan nomor ID 20 pada Switch Cisco, perintah mode global configuration yang tepat adalah...",
-                options: ["switchport mode access vlan 20", "interface vlan 20", "vlan 20", "set vlan 20", "vlan database 20"],
-                answer: 2
+                id: 3,
+                topic: "Mode Port Switch",
+                question: "Port pada switch yang digunakan untuk menghubungkan antar switch agar dapat meneruskan banyak traffic VLAN sekaligus dinamakan port...",
+                code: null,
+                options: ["Access Port", "Trunk Port", "Console Port", "Auxiliary Port", "Loopback Port"],
+                answer: 1,
+                explanation: "Trunk port membawa traffic dari berbagai VLAN menggunakan enkapsulasi seperti IEEE 802.1Q."
             },
             {
-                q: "Apa fungsi dari port mode Access pada sebuah switch yang dikonfigurasi VLAN?",
-                options: [
-                    "Menghubungkan switch dengan switch lain untuk membawa banyak VLAN",
-                    "Menghubungkan switch ke perangkat akhir (End Device) seperti PC atau printer yang hanya berada pada satu VLAN",
-                    "Menghubungkan jaringan ke router tanpa menggunakan metode trunking",
-                    "Mengubah paket data dari tag menjadi untagged secara otomatis",
-                    "Mengaktifkan protokol routing dinamis OSPF pada switch"
-                ],
-                answer: 1
+                id: 4,
+                topic: "Perintah CLI Cisco",
+                question: "Perintah dasar pada CLI Cisco switch untuk membuat VLAN baru dengan nomor ID 20 adalah...",
+                code: "Switch(config)# vlan 20\nSwitch(config-vlan)# name LAB_TKJ",
+                options: ["create vlan 20", "vlan 20", "set vlan 20", "network vlan 20", "ip vlan 20"],
+                answer: 1,
+                explanation: "Perintah 'vlan [nomor]' pada global configuration masuk ke mode vlan configuration."
             },
             {
-                q: "Perintah Cisco IOS apa yang digunakan untuk mengubah status port interface FastEthernet 0/1 menjadi mode akses?",
-                options: [
-                    "switchport mode trunk",
-                    "switchport access vlan 10",
-                    "switchport mode access",
-                    "vlan access 10",
-                    "switchport trunk native vlan 10"
-                ],
-                answer: 2
-            },
-            {
-                q: "Perhatikan konfigurasi berikut di Cisco Switch:",
-                snippet: "Switch(config)# interface range fastethernet 0/2 - 5\nSwitch(config-if-range)# switchport mode access\nSwitch(config-if-range)# switchport access vlan 30",
-                options: [
-                    "Mengonfigurasi port Fa0/2 sampai Fa0/5 sebagai port trunk untuk VLAN 30",
-                    "Mengonfigurasi port Fa0/2 sampai Fa0/5 sebagai port akses untuk VLAN 30 secara bersamaan",
-                    "Menghapus VLAN 30 dari port Fa0/2 sampai Fa0/5",
-                    "Mengaktifkan routing inter-VLAN pada port Fa0/2 sampai Fa0/5",
-                    "Membatasi bandwidth pada port Fa0/2 sampai Fa0/5 maksimal 30 Mbps"
-                ],
-                answer: 1
-            },
-            {
-                q: "Apa fungsi utama dari port mode Trunk pada switch?",
-                options: [
-                    "Menghubungkan komputer klien ke switch",
-                    "Menghubungkan printer jaringan ke switch utama",
-                    "Membawa lalu lintas data dari beberapa VLAN yang berbeda melalui satu kabel fisik tunggal",
-                    "Mengisolasi jaringan agar tidak bisa berkomunikasi dengan VLAN lain",
-                    "Menjaga keamanan port agar tidak bisa diakses oleh perangkat asing"
-                ],
-                answer: 2
-            },
-            {
-                q: "Protokol enkapsulasi trunking apa yang bersifat standar terbuka (open standard) dan didukung oleh berbagai vendor switch?",
-                options: ["ISL (Inter-Switch Link)", "DTP (Dynamic Trunking Protocol)", "VTP (VLAN Trunking Protocol)", "802.1Q (Dot1q)", "STP (Spanning Tree Protocol)"],
-                answer: 3
-            },
-            {
-                q: "Apa yang dimaksud dengan Native VLAN pada port trunk 802.1Q?",
-                options: [
-                    "VLAN yang tidak memiliki alamat IP",
-                    "VLAN yang trafik datanya dikirimkan tanpa diberi tag (untagged) pada link trunk",
-                    "VLAN utama yang digunakan untuk manajemen remote switch",
-                    "VLAN yang khusus untuk trafik voice over IP (VoIP)",
-                    "VLAN cadangan jika VLAN utama mengalami kegagalan"
-                ],
-                answer: 1
-            },
-            {
-                q: "Jika dua komputer berada pada switch yang sama tetapi memiliki VLAN ID yang berbeda (misal PC 1 di VLAN 10 dan PC 2 di VLAN 20), bagaimana cara agar kedua komputer tersebut dapat saling berkomunikasi?",
-                options: [
-                    "Cukup dengan menghubungkan kabel langsung antar komputer",
-                    "Menggunakan perangkat Router atau Switch Layer 3 untuk melakukan Inter-VLAN Routing",
-                    "Mengubah kedua port switch menjadi mode trunk",
-                    "Mengganti kabel UTP standar dengan kabel Cross-Over",
-                    "Menonaktifkan protokol Spanning Tree pada switch"
-                ],
-                answer: 1
-            },
-            {
-                q: "Perintah untuk melihat daftar VLAN yang aktif beserta port yang tergabung di dalamnya pada Cisco Switch adalah...",
-                options: ["show running-config", "show ip interface brief", "show vlan brief", "show vlan summary", "show mac-address-table"],
-                answer: 2
-            },
-            {
-                q: "Apa kepanjangan dari VTP dalam konteks administrasi VLAN berbasis switch Cisco?",
-                options: ["Virtual Trunking Protocol", "VLAN Trunking Protocol", "Voice Transfer Protocol", "Virtual Terminal Program", "VLAN Transport Provider"],
-                answer: 1
-            },
-            {
-                q: "Berapa rentang ID VLAN yang tersedia untuk penggunaan normal (Normal Range VLAN) pada switch Cisco?",
-                options: ["1 hingga 1005", "1006 hingga 4094", "1 hingga 4096", "0 hingga 1023", "100 hingga 500"],
-                answer: 0
-            },
-            {
-                q: "Perhatikan perintah konfigurasi sub-interface untuk Router on a Stick berikut:",
-                snippet: "Router(config)# interface gigabitethernet 0/0.10\nRouter(config-subif)# encapsulation dot1q 10\nRouter(config-subif)# ip address 192.168.10.1 255.255.255.0",
-                options: [
-                    "Mengatur agar sub-interface mengenali dan memproses trafik data yang diberi tag VLAN 10",
-                    "Mengaktifkan enkapsulasi ISL pada port fisik router",
-                    "Menghubungkan router ke switch menggunakan port trunk",
-                    "Mengatur alamat IP gateway untuk VLAN 10",
-                    "Membatasi jumlah host maksimal di VLAN 10"
-                ],
-                answer: 0
-            },
-            {
-                q: "Mengapa VLAN sangat direkomendasikan dalam perancangan jaringan skala menengah hingga besar?",
-                options: [
-                    "Karena dapat memperpanjang jarak maksimal kabel UTP hingga 500 meter",
-                    "Karena dapat meningkatkan keamanan jaringan, mengurangi broadcast domain, dan mempermudah manajemen jaringan",
-                    "Karena secara otomatis menaikkan kecepatan bandwidth ISP",
-                    "Karena menghilangkan kebutuhan akan alamat IP lokal",
-                    "Karena membuat semua perangkat berada dalam satu broadcast domain yang besar"
-                ],
-                answer: 1
+                id: 5,
+                topic: "Pengujian VLAN",
+                question: "Dua komputer berbeda ruangan berada pada VLAN 10 dan VLAN 20. Agar kedua komputer tersebut dapat saling berkomunikasi, perangkat tambahan yang wajib ditambahkan adalah...",
+                code: null,
+                options: ["Hub biasa", "Router (Inter-VLAN Routing) atau Layer 3 Switch", "Repeater", "Bridge", "Modem ADSL"],
+                answer: 1,
+                explanation: "Komunikasi antar VLAN berbeda membutuhkan perangkat Layer 3 seperti Router atau Switch Layer 3."
             }
         ];
 
-        /* ==========================================================================
-           2. GLOBAL STATE & DEFAULT DATA (17 SISWA DEFAULT)
-           ========================================================================== */
-        const DEFAULT_STUDENTS = [
-            "AKBAR",
-            "AKBAR RAHMAT ASMUDIN",
-            "DESIYANI",
-            "FAUZANAL AKRAM",
-            "LA ODE HAZI AL HAZA SUHARDIN",
-            "LA ODE WAHYUDIN",
-            "LASMI",
-            "MUH EKA SAPUTRA",
-            "MUHAMMAD REZA",
-            "NUR AIZYA",
-            "RISWAN",
-            "SAKINAH RAMADHANI",
-            "SUCI SEL",
-            "WA ODE BULAN RAMADHAN",
-            "WA ODE DERLIN SEPTIANA",
-            "WA ODE MARSYA MUHAJIR",
-            "WA ODE NURAISYAH AFIFAH"
-        ];
+        let currentStudentName = "";
+        let currentQIndex = 0;
+        let studentAnswers = {};
+        let timerSeconds = 0;
+        let timerInterval = null;
 
-        let config = {
-            duration: 30, // in minutes
-            students: [...DEFAULT_STUDENTS]
+        window.onload = function() {
+            populateStudentDropdown();
         };
 
-        let currentStudent = "";
-        let userAnswers = new Array(quizData.length).fill(null);
-        let currentIndex = 0;
-        let timerInterval = null;
-        let timeLeftSeconds = 0;
-        let warningCount = 0;
-        let examActive = false;
-
-        /* ==========================================================================
-           3. INITIALIZATION & STORAGE
-           ========================================================================== */
-        window.addEventListener('DOMContentLoaded', () => {
-            loadConfig();
-            populateStudentDropdown();
-            initProtection();
-        });
-
-        function loadConfig() {
-            const savedConfig = localStorage.getItem('vlan_exam_config');
-            if (savedConfig) {
-                config = JSON.parse(savedConfig);
-            }
-            document.getElementById('displayDuration').innerText = `${config.duration} Menit`;
-            document.getElementById('inputExamDuration').value = config.duration;
-            document.getElementById('inputStudentList').value = config.students.join('\n');
-        }
-
         function populateStudentDropdown() {
-            const select = document.getElementById('selectStudentName');
-            select.innerHTML = '<option value="" disabled selected>-- Pilih nama kamu dari daftar --</option>';
-            config.students.forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name;
-                opt.textContent = name;
+            const select = document.getElementById("selectStudent");
+            select.innerHTML = '<option value="">-- Pilih Nama Kamu --</option>';
+            DEFAULT_STUDENTS.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.name;
+                opt.textContent = `${s.no}. ${s.name}`;
                 select.appendChild(opt);
             });
-
-            select.addEventListener('change', (e) => {
-                const btn = document.getElementById('btnStart');
-                if (e.target.value) {
-                    btn.disabled = false;
-                    currentStudent = e.target.value;
-                } else {
-                    btn.disabled = true;
-                }
-            });
         }
 
-        /* ==========================================================================
-           4. ADMIN / TEACHER LOGIC (PASSWORD: 12345)
-           ========================================================================== */
-        function openAdminAuth() {
-            if (examActive) return;
-            document.getElementById('inputAdminPassword').value = '';
-            document.getElementById('adminAuthError').classList.add('hidden');
-            document.getElementById('modalAdminAuth').classList.remove('hidden');
-        }
+        function switchRole(role) {
+            const btnS = document.getElementById("btnRoleStudent");
+            const btnT = document.getElementById("btnRoleTeacher");
+            const secS = document.getElementById("studentPortal");
+            const secT = document.getElementById("teacherPortal");
 
-        function verifyAdminPassword(e) {
-            e.preventDefault();
-            const pass = document.getElementById('inputAdminPassword').value;
-            if (pass === '789') {
-                closeModal('modalAdminAuth');
-                openAdminDashboard();
+            if (role === 'student') {
+                btnS.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 bg-white text-brand-900 shadow";
+                btnT.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 transition-all duration-200 flex items-center space-x-1.5";
+                secS.classList.remove("hidden");
+                secT.classList.add("hidden");
             } else {
-                document.getElementById('adminAuthError').classList.remove('hidden');
+                btnT.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 bg-white text-brand-900 shadow";
+                btnS.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-100 hover:bg-white/10 transition-all duration-200 flex items-center space-x-1.5";
+                secT.classList.remove("hidden");
+                secS.classList.add("hidden");
             }
         }
 
-        function openAdminDashboard() {
-            renderRecapTable();
-            document.getElementById('modalAdminDashboard').classList.remove('hidden');
-        }
-
-        function switchAdminTab(tab) {
-            const settingsTab = document.getElementById('tabAdminSettings');
-            const recapTab = document.getElementById('tabAdminRecap');
-            const btnSet = document.getElementById('tabBtnSettings');
-            const btnRec = document.getElementById('tabBtnRecap');
-
-            if (tab === 'settings') {
-                settingsTab.classList.remove('hidden');
-                recapTab.classList.add('hidden');
-                btnSet.className = "py-2 px-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600";
-                btnRec.className = "py-2 px-3 text-xs font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent";
-            } else {
-                settingsTab.classList.add('hidden');
-                recapTab.classList.remove('hidden');
-                btnRec.className = "py-2 px-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600";
-                btnSet.className = "py-2 px-3 text-xs font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent";
-            }
-        }
-
-        function saveAdminSettings() {
-            const dur = parseInt(document.getElementById('inputExamDuration').value) || 30;
-            const text = document.getElementById('inputStudentList').value;
-            const studentArr = text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-
-            config.duration = dur;
-            config.students = studentArr.length > 0 ? studentArr : [...DEFAULT_STUDENTS];
-
-            localStorage.setItem('vlan_exam_config', JSON.stringify(config));
-            loadConfig();
-            populateStudentDropdown();
-            closeModal('modalAdminDashboard');
-            alert('Pengaturan berhasil disimpan!');
-        }
-
-        function renderRecapTable() {
-            const tbody = document.getElementById('recapTableBody');
-            tbody.innerHTML = '';
-            const results = JSON.parse(localStorage.getItem('vlan_exam_recap') || '[]');
-
-            if (results.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data nilai tersimpan.</td></tr>`;
+        function startQuiz() {
+            const select = document.getElementById("selectStudent");
+            if (!select.value) {
+                alert("Silakan pilih nama siswa terlebih dahulu!");
                 return;
             }
 
-            results.forEach((item, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50";
-                tr.innerHTML = `
-                    <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
-                    <td class="p-2.5 font-semibold text-slate-800">${escapeHtml(item.name)}</td>
-                    <td class="p-2.5"><span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Selesai</span></td>
-                    <td class="p-2.5 font-bold text-indigo-600">${item.score}</td>
-                    <td class="p-2.5 text-rose-500 font-semibold">${item.warnings}x</td>
-                    <td class="p-2.5 text-slate-500">${item.timestamp}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+            currentStudentName = select.value;
+            const studentObj = DEFAULT_STUDENTS.find(s => s.name === currentStudentName);
 
-        function clearRecapData() {
-            if (confirm('Apakah Anda yakin ingin menghapus seluruh rekap nilai siswa?')) {
-                localStorage.removeItem('vlan_exam_recap');
-                renderRecapTable();
-            }
-        }
+            document.getElementById("displayStudentName").textContent = currentStudentName;
+            document.getElementById("displayStudentNo").textContent = `Nomor Absen: ${studentObj ? studentObj.no : '-'}`;
 
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
+            document.getElementById("studentLoginForm").classList.add("hidden");
+            document.getElementById("quizScreen").classList.remove("hidden");
 
-        /* ==========================================================================
-           5. EXAM ENGINE & NAVIGATION
-           ========================================================================== */
-        function startExam(e) {
-            e.preventDefault();
-            if (!currentStudent) return;
+            currentQIndex = 0;
+            studentAnswers = {};
+            timerSeconds = 0;
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                const secs = String(timerSeconds % 60).padStart(2, '0');
+                document.getElementById("quizTimer").textContent = `${mins}:${secs}`;
+            }, 1000);
 
-            // Request Fullscreen
-            requestFullscreen();
-
-            examActive = true;
-            userAnswers = new Array(quizData.length).fill(null);
-            currentIndex = 0;
-            warningCount = 0;
-            timeLeftSeconds = config.duration * 60;
-
-            document.getElementById('viewLogin').classList.add('hidden');
-            document.getElementById('viewQuiz').classList.remove('hidden');
-            document.getElementById('viewQuiz').classList.add('flex');
-            document.getElementById('btnAdminModal').classList.add('hidden');
-            document.getElementById('quizStudentName').innerText = currentStudent;
-
-            updateWarningBadge();
-            renderQuestionGrid();
-            loadQuestion(0);
-            startTimer();
+            loadQuestion(currentQIndex);
+            renderNumberGrid();
         }
 
         function loadQuestion(index) {
-            currentIndex = index;
-            const data = quizData[index];
+            const q = QUIZ_QUESTIONS[index];
+            document.getElementById("currentQNum").textContent = index + 1;
+            document.getElementById("questionTopic").textContent = `Topik: ${q.topic}`;
+            document.getElementById("questionText").textContent = q.question;
 
-            document.getElementById('currentQNum').innerText = index + 1;
-            document.getElementById('questionText').innerText = `${index + 1}. ${data.q}`;
-
-            // Code Snippet Handling
-            const snippetBox = document.getElementById('codeSnippetBox');
-            if (data.snippet) {
-                snippetBox.innerText = data.snippet;
-                snippetBox.classList.remove('hidden');
+            const codeBox = document.getElementById("codeSnippetBox");
+            if (q.code) {
+                codeBox.classList.remove("hidden");
+                document.getElementById("codeSnippetText").textContent = q.code;
             } else {
-                snippetBox.classList.add('hidden');
+                codeBox.classList.add("hidden");
             }
 
-            // Render Options
-            const optsContainer = document.getElementById('optionsContainer');
-            optsContainer.innerHTML = '';
-
-            const labels = ['A', 'B', 'C', 'D', 'E'];
-            data.options.forEach((optText, i) => {
-                const isSelected = userAnswers[index] === i;
-                const optBtn = document.createElement('button');
-                optBtn.type = 'button';
-                optBtn.onclick = () => selectOption(i);
-                optBtn.className = `w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all flex items-start space-x-3 ${
-                    isSelected 
-                        ? 'bg-indigo-50 border-indigo-600 text-indigo-900 ring-2 ring-indigo-500/20 shadow-sm' 
-                        : 'bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-slate-100'
-                }`;
-
-                optBtn.innerHTML = `
-                    <span class="w-6 h-6 rounded-lg font-bold flex items-center justify-center shrink-0 text-xs ${
-                        isSelected ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-300 text-slate-600'
-                    }">${labels[i]}</span>
-                    <span class="pt-0.5 leading-relaxed">${escapeHtml(optText)}</span>
+            const optContainer = document.getElementById("optionsContainer");
+            optContainer.innerHTML = "";
+            q.options.forEach((opt, oIdx) => {
+                const isChecked = studentAnswers[index] === oIdx;
+                const div = document.createElement("label");
+                div.className = `flex items-start space-x-3 p-3.5 rounded-xl border cursor-pointer transition ${isChecked ? 'bg-brand-50 border-brand-500 text-brand-900 font-medium' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'}`;
+                div.innerHTML = `
+                    <input type="radio" name="questionOption" value="${oIdx}" ${isChecked ? 'checked' : ''} onclick="selectOption(${index}, ${oIdx})" class="mt-0.5 text-brand-600 focus:ring-brand-500">
+                    <span class="text-sm">${String.fromCharCode(65 + oIdx)}. ${opt}</span>
                 `;
-                optsContainer.appendChild(optBtn);
+                optContainer.appendChild(div);
             });
 
-            // Update Nav Buttons
-            document.getElementById('btnPrev').disabled = (index === 0);
-            document.getElementById('btnPrev').classList.toggle('opacity-50', index === 0);
-
-            if (index === quizData.length - 1) {
-                document.getElementById('btnNext').classList.add('hidden');
-                document.getElementById('btnSubmit').classList.remove('hidden');
-            } else {
-                document.getElementById('btnNext').classList.remove('hidden');
-                document.getElementById('btnSubmit').classList.add('hidden');
-            }
-
-            updateGridSelection();
+            document.getElementById("btnPrevQ").disabled = index === 0;
+            document.getElementById("btnPrevQ").style.opacity = index === 0 ? "0.5" : "1";
+            document.getElementById("btnNextQ").textContent = index === QUIZ_QUESTIONS.length - 1 ? "Selesai" : "Berikutnya";
         }
 
-        function selectOption(optionIndex) {
-            userAnswers[currentIndex] = optionIndex;
-            loadQuestion(currentIndex);
+        function selectOption(qIdx, optIdx) {
+            studentAnswers[qIdx] = optIdx;
+            loadQuestion(qIdx);
+            renderNumberGrid();
             updateAnsweredCount();
-        }
-
-        function prevQuestion() {
-            if (currentIndex > 0) loadQuestion(currentIndex - 1);
         }
 
         function nextQuestion() {
-            if (currentIndex < quizData.length - 1) loadQuestion(currentIndex + 1);
+            if (currentQIndex < QUIZ_QUESTIONS.length - 1) {
+                currentQIndex++;
+                loadQuestion(currentQIndex);
+            } else {
+                confirmSubmitQuiz();
+            }
         }
 
-        function renderQuestionGrid() {
-            const grid = document.getElementById('questionGrid');
-            grid.innerHTML = '';
-            quizData.forEach((_, idx) => {
-                const btn = document.createElement('button');
-                btn.id = `gridBtn-${idx}`;
-                btn.onclick = () => loadQuestion(idx);
-                btn.className = "h-8 rounded-lg border text-xs font-bold transition flex items-center justify-center bg-slate-100 border-slate-200 text-slate-600";
-                btn.innerText = idx + 1;
-                grid.appendChild(btn);
-            });
-            updateAnsweredCount();
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                loadQuestion(currentQIndex);
+            }
         }
 
-        function updateGridSelection() {
-            quizData.forEach((_, idx) => {
-                const btn = document.getElementById(`gridBtn-${idx}`);
-                if (!btn) return;
-                const isAnswered = userAnswers[idx] !== null;
-                const isCurrent = idx === currentIndex;
+        function renderNumberGrid() {
+            const grid = document.getElementById("numberGrid");
+            grid.innerHTML = "";
+            QUIZ_QUESTIONS.forEach((_, idx) => {
+                const isAnswered = studentAnswers[idx] !== undefined;
+                const isCurrent = currentQIndex === idx;
 
+                let btnClass = "w-9 h-9 rounded-lg text-xs font-bold transition flex items-center justify-center ";
                 if (isCurrent) {
-                    btn.className = "h-8 rounded-lg border text-xs font-bold transition flex items-center justify-center bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-300";
+                    btnClass += "bg-brand-600 text-white shadow";
                 } else if (isAnswered) {
-                    btn.className = "h-8 rounded-lg border text-xs font-bold transition flex items-center justify-center bg-emerald-100 border-emerald-300 text-emerald-800";
+                    btnClass += "bg-emerald-100 border border-emerald-400 text-emerald-800";
                 } else {
-                    btn.className = "h-8 rounded-lg border text-xs font-bold transition flex items-center justify-center bg-slate-100 border-slate-200 text-slate-600";
+                    btnClass += "bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200";
                 }
+
+                const btn = document.createElement("button");
+                btn.className = btnClass;
+                btn.textContent = idx + 1;
+                btn.onclick = () => {
+                    currentQIndex = idx;
+                    loadQuestion(idx);
+                };
+                grid.appendChild(btn);
             });
         }
 
         function updateAnsweredCount() {
-            const count = userAnswers.filter(a => a !== null).length;
-            document.getElementById('answeredCount').innerText = `Dijawab: ${count}/15`;
+            const answered = Object.keys(studentAnswers).length;
+            document.getElementById("answeredCount").textContent = `${answered}/${QUIZ_QUESTIONS.length} Terjawab`;
         }
 
-        /* ==========================================================================
-           6. TIMER & SUBMISSION
-           ========================================================================== */
-        function startTimer() {
+        function confirmSubmitQuiz() {
+            showModal("Konfirmasi Kirim", "Apakah Anda yakin ingin menyelesaikan kuis ini dan mengirim hasilnya?", () => {
+                submitQuiz();
+            });
+        }
+
+        function submitQuiz() {
             clearInterval(timerInterval);
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                timeLeftSeconds--;
-                updateTimerDisplay();
-                if (timeLeftSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    alert('Waktu ujian telah habis!');
-                    submitExam();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const m = Math.floor(timeLeftSeconds / 60);
-            const s = timeLeftSeconds % 60;
-            document.getElementById('timerText').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function confirmSubmitExam() {
-            const unanswered = userAnswers.filter(a => a === null).length;
-            let msg = "Apakah Anda yakin ingin menyelesaikan ujian?";
-            if (unanswered > 0) {
-                msg = `Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin menyelesaikan?`;
-            }
-            if (confirm(msg)) {
-                submitExam();
-            }
-        }
-
-        function submitExam() {
-            examActive = false;
-            clearInterval(timerInterval);
-            exitFullscreen();
-
-            // Calculate Score
             let correctCount = 0;
-            quizData.forEach((q, idx) => {
-                if (userAnswers[idx] === q.answer) correctCount++;
+            QUIZ_QUESTIONS.forEach((q, idx) => {
+                if (studentAnswers[idx] === q.answer) correctCount++;
             });
 
-            const finalScore = Math.round((correctCount / quizData.length) * 100);
+            const score = Math.round((correctCount / QUIZ_QUESTIONS.length) * 100);
+            const timeSpent = document.getElementById("quizTimer").innerText;
+            const now = new Date();
+            const dateSubmitted = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
 
-            // Time Spent
-            const totalSeconds = (config.duration * 60) - timeLeftSeconds;
-            const spentM = Math.floor(totalSeconds / 60);
-            const spentS = totalSeconds % 60;
-            const timeFormatted = `${spentM}m ${spentS}s`;
-
-            // Save to localStorage
-            const recap = JSON.parse(localStorage.getItem('vlan_exam_recap') || '[]');
-            recap.unshift({
-                name: currentStudent,
-                score: finalScore,
+            const studentData = {
+                name: currentStudentName,
+                status: "completed",
                 correct: correctCount,
-                warnings: warningCount,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
-            localStorage.setItem('vlan_exam_recap', JSON.stringify(recap));
+                total: QUIZ_QUESTIONS.length,
+                score: score,
+                time: timeSpent,
+                date: dateSubmitted
+            };
 
-            // Show Result View
-            document.getElementById('viewQuiz').classList.add('hidden');
-            document.getElementById('viewQuiz').classList.remove('flex');
-            document.getElementById('viewResult').classList.remove('hidden');
-            document.getElementById('btnAdminModal').classList.remove('hidden');
+            // SIMPAN KE LOCALSTORAGE (Kunci: vlan_quiz_results)
+            let allResults = JSON.parse(localStorage.getItem('vlan_quiz_results')) || {};
+            allResults[currentStudentName] = studentData;
+            localStorage.setItem('vlan_quiz_results', JSON.stringify(allResults));
 
-            document.getElementById('resultStudentName').innerText = currentStudent;
-            document.getElementById('resultScore').innerText = finalScore;
-            document.getElementById('resultCorrect').innerText = correctCount;
-            document.getElementById('resultTime').innerText = timeFormatted;
+            showResultScreen(studentData);
         }
 
-        function resetToHome() {
-            document.getElementById('viewResult').classList.add('hidden');
-            document.getElementById('viewLogin').classList.remove('hidden');
-            document.getElementById('selectStudentName').value = "";
-            document.getElementById('btnStart').disabled = true;
-            currentStudent = "";
-        }
+        function showResultScreen(data) {
+            document.getElementById("quizScreen").classList.add("hidden");
+            document.getElementById("resultScreen").classList.remove("hidden");
 
-        /* ==========================================================================
-           7. ANTI-CHEAT & SECURITY SYSTEM
-           ========================================================================== */
-        function initProtection() {
-            // Disable Context Menu (Right Click)
-            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.getElementById("resultStudentDetail").textContent = `${data.name} • ${data.date}`;
+            document.getElementById("finalScore").textContent = data.score;
+            document.getElementById("finalCorrect").textContent = `${data.correct}/${data.total}`;
+            document.getElementById("finalTime").textContent = data.time;
 
-            // Disable Copy, Cut, Paste, Select
-            document.addEventListener('copy', e => e.preventDefault());
-            document.addEventListener('cut', e => e.preventDefault());
-            document.addEventListener('paste', e => e.preventDefault());
-
-            // Visibility / Tab Change Detection
-            document.addEventListener('visibilitychange', () => {
-                if (examActive && document.hidden) {
-                    triggerCheatWarning("Kamu terdeteksi berpindah tab atau keluar dari browser!");
-                }
-            });
-
-            // Window Blur Detection
-            window.addEventListener('blur', () => {
-                if (examActive) {
-                    triggerCheatWarning("Fokus layar hilang! Jaga aplikasi ujian tetap aktif.");
-                }
-            });
-
-            // Fullscreen Change Detection
-            document.addEventListener('fullscreenchange', () => {
-                if (examActive && !document.fullscreenElement) {
-                    triggerCheatWarning("Kamu keluar dari mode Layar Penuh (Fullscreen)!");
-                }
-            });
-        }
-
-        function triggerCheatWarning(reason) {
-            if (!examActive) return;
-
-            // Check if warning modal already visible to prevent duplicate increments
-            const modal = document.getElementById('modalWarning');
-            if (!modal.classList.contains('hidden')) return;
-
-            warningCount++;
-            updateWarningBadge();
-
-            document.getElementById('warningMessage').innerText = reason;
-            document.getElementById('warningCountText').innerText = `Pelanggaran ke-${warningCount} dari 3`;
-
-            if (warningCount > 3) {
-                alert("Kamu telah melakukan lebih dari 3 kali pelanggaran! Ujian di-submit otomatis.");
-                closeModal('modalWarning');
-                submitExam();
+            const badge = document.getElementById("kkmBadge");
+            if (data.score >= 60) {
+                badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+                badge.innerHTML = `<i class="fa-solid fa-check-circle mr-1.5"></i> TUNTAS (Menguasai TP 10.4)`;
             } else {
-                modal.classList.remove('hidden');
+                badge.className = "inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i> BELUM TUNTAS (Perlu Remedial)`;
+            }
+
+            renderReviewItems();
+        }
+
+        function renderReviewItems() {
+            const container = document.getElementById("reviewContainer");
+            container.innerHTML = "";
+            QUIZ_QUESTIONS.forEach((q, idx) => {
+                const userAns = studentAnswers[idx];
+                const isCorrect = userAns === q.answer;
+
+                const div = document.createElement("div");
+                div.className = "p-4 rounded-2xl border border-slate-100 bg-slate-50 space-y-2 text-xs";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center font-bold text-slate-800">
+                        <span>Soal ${idx + 1}: ${q.topic}</span>
+                        <span class="px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${isCorrect ? 'Benar' : 'Salah'}</span>
+                    </div>
+                    <p class="text-slate-700">${q.question}</p>
+                    <p class="text-slate-500">Jawaban Anda: <strong class="${isCorrect ? 'text-emerald-600' : 'text-rose-600'}">${userAns !== undefined ? String.fromCharCode(65 + userAns) + '. ' + q.options[userAns] : 'Tidak dijawab'}</strong></p>
+                    <p class="text-slate-500">Kunci Jawaban: <strong class="text-emerald-600">${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}</strong></p>
+                    <p class="text-slate-600 italic bg-white p-2.5 rounded-xl border border-slate-200"><strong>Pembahasan:</strong> ${q.explanation}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleReviewSection() {
+            const sec = document.getElementById("reviewSection");
+            sec.classList.toggle("hidden");
+        }
+
+        function resetToStudentHome() {
+            document.getElementById("resultScreen").classList.add("hidden");
+            document.getElementById("studentLoginForm").classList.remove("hidden");
+            document.getElementById("selectStudent").value = "";
+        }
+
+        // GURU LOGIN & DASHBOARD LOGIC
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById("teacherPassword");
+            const eyeIcon = document.getElementById("eyeIcon");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                eyeIcon.className = "fa-solid fa-eye-slash";
+            } else {
+                passInput.type = "password";
+                eyeIcon.className = "fa-solid fa-eye";
             }
         }
 
-        function resumeExamFromWarning() {
-            closeModal('modalWarning');
-            requestFullscreen();
-        }
-
-        function updateWarningBadge() {
-            document.getElementById('warningBadge').innerText = `Pelanggaran: ${warningCount}/3`;
-        }
-
-        function requestFullscreen() {
-            const elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen().catch(() => {});
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
+        function verifyTeacherLogin() {
+            const pwd = document.getElementById("teacherPassword").value;
+            const err = document.getElementById("loginError");
+            if (pwd === "12345") {
+                err.classList.add("hidden");
+                document.getElementById("teacherLoginForm").classList.add("hidden");
+                document.getElementById("teacherDashboard").classList.remove("hidden");
+                renderTeacherTable();
+            } else {
+                err.classList.remove("hidden");
             }
         }
 
-        function exitFullscreen() {
-            if (document.fullscreenElement) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => {});
+        function renderTeacherTable() {
+            const tbody = document.getElementById("studentTableBody");
+            tbody.innerHTML = "";
+
+            const savedResults = JSON.parse(localStorage.getItem('vlan_quiz_results')) || {};
+            let completedCount = 0;
+            let totalScoreSum = 0;
+            let passedCount = 0;
+
+            DEFAULT_STUDENTS.forEach((student, index) => {
+                const res = savedResults[student.name];
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                if (res && res.status === 'completed') {
+                    completedCount++;
+                    totalScoreSum += res.score;
+                    if (res.score >= 60) passedCount++;
+
+                    tr.innerHTML = `
+                        <td class="p-3 text-center font-medium">${index + 1}</td>
+                        <td class="p-3 font-semibold text-slate-800">${student.name}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Sudah Ujian</span></td>
+                        <td class="p-3 text-center font-bold">${res.correct}/${res.total}</td>
+                        <td class="p-3 text-center font-black text-brand-600">${res.score}</td>
+                        <td class="p-3 font-mono text-slate-600">${res.time}</td>
+                        <td class="p-3 text-slate-500">${res.date}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteStudentResult('${student.name}')" class="text-rose-500 hover:text-rose-700 text-xs" title="Hapus Data"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td class="p-3 text-center font-medium">${index + 1}</td>
+                        <td class="p-3 font-semibold text-slate-800">${student.name}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full font-bold text-[10px]">Belum Ujian</span></td>
+                        <td class="p-3 text-center text-slate-400">-</td>
+                        <td class="p-3 text-center text-slate-400">-</td>
+                        <td class="p-3 text-slate-400">-</td>
+                        <td class="p-3 text-slate-400">-</td>
+                        <td class="p-3 text-center text-slate-400">-</td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("statCompleted").textContent = `${completedCount} / 17`;
+            document.getElementById("statAverage").textContent = completedCount > 0 ? Math.round(totalScoreSum / completedCount) : 0;
+            document.getElementById("statPassed").textContent = passedCount;
+            document.getElementById("statPending").textContent = 17 - completedCount;
+        }
+
+        function filterTable() {
+            const query = document.getElementById("searchStudentTable").value.toLowerCase();
+            const statusFilter = document.getElementById("filterStatus").value;
+            const rows = document.getElementById("studentTableBody").getElementsByTagName("tr");
+
+            const savedResults = JSON.parse(localStorage.getItem('vlan_quiz_results')) || {};
+
+            for (let tr of rows) {
+                const nameCell = tr.getElementsByTagName("td")[1];
+                if (!nameCell) continue;
+                const name = nameCell.textContent.toLowerCase();
+                const isCompleted = savedResults[name.toUpperCase()] && savedResults[name.toUpperCase()].status === 'completed';
+
+                let matchStatus = true;
+                if (statusFilter === 'completed') matchStatus = isCompleted;
+                if (statusFilter === 'pending') matchStatus = !isCompleted;
+
+                const matchQuery = name.includes(query);
+
+                if (matchStatus && matchQuery) {
+                    tr.style.display = "";
+                } else {
+                    tr.style.display = "none";
                 }
             }
         }
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        function deleteStudentResult(name) {
+            showModal("Hapus Data Siswa", `Yakin ingin menghapus hasil kuis atas nama ${name}?`, () => {
+                let allResults = JSON.parse(localStorage.getItem('vlan_quiz_results')) || {};
+                delete allResults[name];
+                localStorage.setItem('vlan_quiz_results', JSON.stringify(allResults));
+                renderTeacherTable();
+            });
+        }
+
+        function confirmResetAllData() {
+            showModal("Reset Seluruh Data", "Yakin ingin menghapus seluruh rekapitulasi nilai 17 siswa? Tindakan ini tidak dapat dibatalkan.", () => {
+                localStorage.removeItem('vlan_quiz_results');
+                renderTeacherTable();
+            });
+        }
+
+        function exportToCSV() {
+            const savedResults = JSON.parse(localStorage.getItem('vlan_quiz_results')) || {};
+            let csv = "No,Nama Siswa,Status,Benar,Total,Nilai,Waktu Tempuh,Tanggal Selesai\n";
+
+            DEFAULT_STUDENTS.forEach((s, idx) => {
+                const res = savedResults[s.name];
+                if (res) {
+                    csv += `${idx + 1},"${s.name}",Sudah Ujian,${res.correct},${res.total},${res.score},"${res.time}","${res.date}"\n`;
+                } else {
+                    csv += `${idx + 1},"${s.name}",Belum Ujian,-,-,-,-,-\n`;
+                }
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.setAttribute("href", url);
+            a.setAttribute("download", "rekap_nilai_vlan_tp10.4.csv");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Modal Utility
+        function showModal(title, message, onConfirm) {
+            const modal = document.getElementById("customModal");
+            document.getElementById("modalTitle").textContent = title;
+            document.getElementById("modalMessage").textContent = message;
+            modal.classList.remove("hidden");
+
+            const btnConfirm = document.getElementById("btnModalConfirm");
+            const btnCancel = document.getElementById("btnModalCancel");
+
+            const newConfirm = btnConfirm.cloneNode(true);
+            btnConfirm.parentNode.replaceChild(newConfirm, btnConfirm);
+
+            newConfirm.addEventListener("click", () => {
+                modal.classList.add("hidden");
+                onConfirm();
+            });
+
+            btnCancel.onclick = () => {
+                modal.classList.add("hidden");
+            };
         }
     </script>
 </body>
